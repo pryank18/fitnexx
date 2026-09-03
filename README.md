@@ -1,47 +1,31 @@
-# Fitnexx
+# FitNexx
 
-**Your all-in-one fitness companion, track workouts, fuel your nutrition, and watch your progress grow.**
+FitNexx is a strength training platform built around one idea: your training plan should react to the numbers you actually hit, not follow a generic template. Log a set, and the next one adjusts.
 
-## About
+## Live demo
 
-Fitnexx is a fitness platform built to help people plan workouts, log meals, and monitor progress in one place. This repository hosts the codebase and documentation for the project.
+https://pryank18.github.io/fitnexx/
 
-## Features
+## What it does
 
-- Workout planner and logger
-- Nutrition and calorie tracking
-- Progress dashboard with charts
-- Personal profile and goal setting
-- Responsive design for mobile and desktop
+- **Set logging & load tracking** — log working sets and watch your estimated 1RM move over time
+- **Adaptive programs** — strength, hybrid, and conditioning/mobility plans that adjust week to week based on logged performance, not a fixed template
+- **Calculator** — training-load and estimated-max calculations from logged lifts
+- **Dashboard** — current stats, streaks, and program status in one view
+- **Progress tracking** — charts showing strength gains over time
+- **Programs, method, pricing, and FAQ pages** — public-facing marketing/product pages alongside the app
 
-## Tech Stack
+## Tech stack
 
-(This section will be updated once the project files are added.)
+Vanilla HTML, CSS, and JavaScript (`app.js`, `styles.css`), structured as a multi-page static site with separate app views (`app-dashboard.html`, `app-calculator.html`, `app-log.html`, `app-programs.html`, `app-progress.html`) plus marketing pages (`index.html`, `programs.html`, `method.html`, `pricing.html`, `faq.html`).
 
-- Frontend: TBD
-- Backend: TBD
-- Database: TBD
-- Other tools: TBD
+## Documentation
 
-## Screenshots
+- [Product spec](docs/product-spec.md)
+- [PRD](FitNexx_PRD.md)
+- [BRD](FitNexx_BRD.md)
+- [MRD](FitNexx_MRD.md)
 
-(Screenshots will be added here.)
+## Status
 
-## Getting Started
-
-1. Clone the repository
-2. Install dependencies
-3. Run the development server
-
-```
-git clone https://github.com/pryank18/fitnexx.git
-cd fitnexx
-```
-
-## Project Files
-
-The application source files will be uploaded to this repository shortly.
-
-## License
-
-(Add a license here if you would like to open source this project.)
+Live — v1 built and deployed as a self-directed product project.
