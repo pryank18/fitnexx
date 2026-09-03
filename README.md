@@ -42,10 +42,6 @@ cd fitnexx
 
 The application source files will be uploaded to this repository shortly.
 
-## Credits
-
-Repository setup and documentation created with Claude (Anthropic).
-
 ## License
 
 (Add a license here if you would like to open source this project.)
