@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programs — FitNexx</title>
+<meta name="description" content="Set your active FitNexx training program.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+  <aside class="app-sidebar">
+    <div class="app-logo-row">
+      <a href="app-dashboard.html" class="logo">FIT<span>NEXX</span></a>
+    </div>
+    <ul class="app-nav">
+      <li><a href="app-dashboard.html">Dashboard</a></li>
+      <li><a href="app-log.html">Log workout</a></li>
+      <li><a href="app-progress.html">Progress</a></li>
+      <li><a href="app-programs.html" class="active">Programs</a></li>
+      <li><a href="app-calculator.html">Calculator</a></li>
+    </ul>
+    <a href="index.html" class="app-back">← Back to site</a>
+  </aside>
+    <main class="app-main">
+      <div class="app-view-head">
+        <div>
+          <h2>Programs</h2>
+          <p>Set your active program. The dashboard reflects whichever one you pick.</p>
+        </div>
+      </div>
+      <div class="program-list" id="program-list"></div>
+    </main>
+  </div>
+<script src="app.js"></script>
+</body>
+</html>

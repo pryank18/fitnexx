@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator — FitNexx</title>
+<meta name="description" content="1RM calculator for FitNexx.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+  <aside class="app-sidebar">
+    <div class="app-logo-row">
+      <a href="app-dashboard.html" class="logo">FIT<span>NEXX</span></a>
+    </div>
+    <ul class="app-nav">
+      <li><a href="app-dashboard.html">Dashboard</a></li>
+      <li><a href="app-log.html">Log workout</a></li>
+      <li><a href="app-progress.html">Progress</a></li>
+      <li><a href="app-programs.html">Programs</a></li>
+      <li><a href="app-calculator.html" class="active">Calculator</a></li>
+    </ul>
+    <a href="index.html" class="app-back">← Back to site</a>
+  </aside>
+    <main class="app-main">
+      <div class="app-view-head">
+        <div>
+          <h2>1RM calculator</h2>
+          <p>A one-off estimate you can save straight into your log.</p>
+        </div>
+      </div>
+
+      <div class="calc-wrap">
+        <div class="calc-form">
+          <p>Uses the Epley formula: weight × (1 + reps ÷ 30).</p>
+
+          <div class="field" style="margin-bottom:20px;">
+            <label for="unit">Units</label>
+            <div class="unit-toggle" role="group" aria-label="Units">
+              <button type="button" id="unit-kg" class="active">Kilograms</button>
+              <button type="button" id="unit-lb">Pounds</button>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:20px;">
+            <label for="calc-lift">Lift</label>
+            <select id="calc-lift">
+              <option>Back squat</option>
+              <option>Bench press</option>
+              <option>Deadlift</option>
+              <option>Overhead press</option>
+            </select>
+          </div>
+
+          <div class="field" style="margin-bottom:20px;">
+            <label for="calc-weight">Weight lifted</label>
+            <input type="number" id="calc-weight" inputmode="decimal" placeholder="e.g. 80" min="0" step="0.5">
+          </div>
+
+          <div class="field">
+            <label for="calc-reps">Reps completed (last rep near failure)</label>
+            <input type="number" id="calc-reps" inputmode="numeric" placeholder="e.g. 5" min="1" max="15" step="1">
+          </div>
+        </div>
+
+        <div class="calc-results">
+          <h4 id="rm-lift-label">BACK SQUAT — ESTIMATED 1RM</h4>
+          <div class="onerm-value" id="onerm-out">— kg</div>
+          <div class="onerm-sub" id="onerm-note">Enter a weight and rep count to calculate.</div>
+
+          <table class="pct-table">
+            <thead><tr><th>% of max</th><th>Working weight</th><th>Typical use</th></tr></thead>
+            <tbody id="pct-body">
+              <tr><td class="pct">95%</td><td class="wt">—</td><td>1–2 rep singles</td></tr>
+              <tr><td class="pct">85%</td><td class="wt">—</td><td>3–5 rep sets</td></tr>
+              <tr><td class="pct">75%</td><td class="wt">—</td><td>Main block work</td></tr>
+              <tr><td class="pct">65%</td><td class="wt">—</td><td>Warm-up / technique</td></tr>
+            </tbody>
+          </table>
+
+          <button class="calc-save-btn" id="calc-save-btn" disabled>Save this set to your log</button>
+          <div class="save-confirm" id="calc-save-confirm"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+<script src="app.js"></script>
+</body>
+</html>
