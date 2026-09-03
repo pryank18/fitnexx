@@ -42,10 +42,6 @@ cd fitnexx
 
 The application source files will be uploaded to this repository shortly.
 
-## Credits
-
-Repository setup and documentation by Pryank Wadhera.
-
 ## License
 
 (Add a license here if you would like to open source this project.)
