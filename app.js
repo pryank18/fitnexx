@@ -1,14 +1,17 @@
 (function(){
   "use strict";
+
+  /* ---------------- storage ---------------- */
   var SETS_KEY = 'fitnexx_sets_v1';
   var PROGRAM_KEY = 'fitnexx_program_v1';
   var LIFTS = ['Back squat','Bench press','Deadlift','Overhead press'];
   var PROGRAMS = [
-    {id:'strength', name:'Strength', desc:'4 sessions / week heavy compound lifts'},
-    {id:'conditioning', name:'Conditioning', desc:'3 sessions / week interval-based'},
-    {id:'mobility', name:'Mobility', desc:'Daily joint-by-joint range work'},
-    {id:'hybrid', name:'Hybrid', desc:'5 sessions / week strength + conditioning'}
-    ];
+    {id:'strength', name:'Strength', desc:'4 sessions / week · heavy compound lifts'},
+    {id:'conditioning', name:'Conditioning', desc:'3 sessions / week · interval-based'},
+    {id:'mobility', name:'Mobility', desc:'Daily · joint-by-joint range work'},
+    {id:'hybrid', name:'Hybrid', desc:'5 sessions / week · strength + conditioning'}
+  ];
+
   function loadSets(){
     try{
       var raw = localStorage.getItem(SETS_KEY);
@@ -24,6 +27,7 @@
   function saveProgram(id){
     try{ localStorage.setItem(PROGRAM_KEY, id); }catch(e){}
   }
+
   function epley(weight, reps){
     return weight * (1 + reps/30);
   }
@@ -37,6 +41,8 @@
   function uid(){
     return 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
   }
+
+  /* ---------------- DASHBOARD (app-dashboard.html) ---------------- */
   function computeBestEstimate(lift, sets){
     var best = 0;
     sets.forEach(function(s){
@@ -47,6 +53,7 @@
     });
     return best;
   }
+
   function computeStreak(sets){
     if(sets.length === 0) return 0;
     var days = {};
@@ -68,86 +75,100 @@
     }
     return streak;
   }
+
   function initDashboard(){
     var cardsEl = document.getElementById('dash-stat-cards');
     if(!cardsEl) return;
     var recentEl = document.getElementById('dash-recent');
+
     var sets = loadSets();
     var program = loadProgram();
     var totalSets = sets.length;
     var streak = computeStreak(sets);
     var programObj = PROGRAMS.filter(function(p){ return p.id === program; })[0];
-    var topLiftEstimate = 0, topLiftName = '-';
+    var topLiftEstimate = 0, topLiftName = '—';
     LIFTS.forEach(function(l){
       var e = computeBestEstimate(l, sets);
       if(e > topLiftEstimate){ topLiftEstimate = e; topLiftName = l; }
     });
-  
-  cardsEl.innerHTML =
-    '<div class="stat-card"><div class="num">' + totalSets + '</div><div class="lbl">Sets logged</div></div>' +
-    '<div class="stat-card"><div class="num">' + streak + '</div><div class="lbl">Day streak</div></div>' +
-    '<div class="stat-card"><div class="num">' + (topLiftEstimate ? Math.round(topLiftEstimate) + ' kg' : '-') + '</div><div class="lbl">' + (topLiftEstimate ? 'Best est. 1RM ' + topLiftName : 'No lifts logged yet') + '</div></div>' +
-    '<div class="stat-card"><div class="num" style="font-size:22px;">' + (programObj ? programObj.name : 'None set') + '</div><div class="lbl">Active program</div></div>';
+
+    cardsEl.innerHTML =
+      '<div class="stat-card"><div class="num">' + totalSets + '</div><div class="lbl">Sets logged</div></div>' +
+      '<div class="stat-card"><div class="num">' + streak + '</div><div class="lbl">Day streak</div></div>' +
+      '<div class="stat-card"><div class="num">' + (topLiftEstimate ? Math.round(topLiftEstimate) + ' kg' : '—') + '</div><div class="lbl">' + (topLiftEstimate ? 'Best est. 1RM · ' + topLiftName : 'No lifts logged yet') + '</div></div>' +
+      '<div class="stat-card"><div class="num" style="font-size:22px;">' + (programObj ? programObj.name : 'None set') + '</div><div class="lbl">Active program</div></div>';
+
     if(sets.length === 0){
-      recentEl.innerHTML = '<div class="empty-state"><strong>Nothing logged yet</strong>Head to Log workout and add your first set - it takes about ten seconds.</div>';
+      recentEl.innerHTML = '<div class="empty-state"><strong>Nothing logged yet</strong>Head to Log workout and add your first set — it takes about ten seconds.</div>';
       return;
     }
+
     var sorted = sets.slice().sort(function(a,b){ return b.date.localeCompare(a.date) || b.id.localeCompare(a.id); }).slice(0,6);
     var html = '<ul class="activity-list">';
     sorted.forEach(function(s){
-      html += '<li><span class="a-lift">' + s.lift + '</span><span class="a-meta">' + s.weight + ' kg x ' + s.reps + ' - ' + fmtDate(s.date) + '</span></li>';
+      html += '<li><span class="a-lift">' + s.lift + '</span><span class="a-meta">' + s.weight + ' kg × ' + s.reps + ' · ' + fmtDate(s.date) + '</span></li>';
     });
     html += '</ul>';
     recentEl.innerHTML = html;
   }
 
- function renderLog(){
-   var wrap = document.getElementById('log-table-wrap');
-   if(!wrap) return;
-   var sets = loadSets().slice().sort(function(a,b){ return b.date.localeCompare(a.date) || b.id.localeCompare(a.id); });
-   if(sets.length === 0){
-     wrap.innerHTML = '<div class="empty-state"><strong>No sets yet</strong>Use the form above - every set you add shows up here and feeds your dashboard and progress charts.</div>';
-     return;
-   }
-   var html = '<table class="log-table"><thead><tr><th>Lift</th><th>Weight</th><th>Reps</th><th>Est. 1RM</th><th>Date</th><th></th></tr></thead><tbody>';
-   sets.forEach(function(s){
-     html += '<tr><td>' + s.lift + '</td><td>' + s.weight + ' kg</td><td>' + s.reps + '</td><td>' + Math.round(epley(s.weight,s.reps)) + ' kg</td><td>' + fmtDate(s.date) + '</td><td><button class="del-btn" data-del="' + s.id + '">Remove</button></td></tr>';
-   });
-   html += '</tbody></table>';
-   wrap.innerHTML = html;
-   wrap.querySelectorAll('.del-btn').forEach(function(btn){
-     btn.addEventListener('click', function(){
-       var id = btn.getAttribute('data-del');
-       var remaining = loadSets().filter(function(s){ return s.id !== id; });
-       saveSets(remaining);
-       renderLog();
-     });
-   });
- }
+  /* ---------------- LOG WORKOUT (app-log.html) ---------------- */
+  function renderLog(){
+    var wrap = document.getElementById('log-table-wrap');
+    if(!wrap) return;
+    var sets = loadSets().slice().sort(function(a,b){ return b.date.localeCompare(a.date) || b.id.localeCompare(a.id); });
 
- function initLogForm(){
-   var logForm = document.getElementById('log-form');
-   if(!logForm) return;
-   var logDateInput = document.getElementById('log-date');
-   logDateInput.value = logDateInput.value || todayISO();
-   logForm.addEventListener('submit', function(ev){
-     ev.preventDefault();
-     var lift = document.getElementById('log-lift').value;
-     var weight = parseFloat(document.getElementById('log-weight').value);
-     var reps = parseInt(document.getElementById('log-reps').value, 10);
-     var date = logDateInput.value || todayISO();
-     if(!weight || !reps || weight <= 0 || reps <= 0) return;
-     var sets = loadSets();
-     sets.push({id: uid(), lift: lift, weight: weight, reps: reps, date: date});
-     saveSets(sets);
-     document.getElementById('log-weight').value = '';
-     document.getElementById('log-reps').value = '';
-     renderLog();
-   });
-   renderLog();
- }
+    if(sets.length === 0){
+      wrap.innerHTML = '<div class="empty-state"><strong>No sets yet</strong>Use the form above — every set you add shows up here and feeds your dashboard and progress charts.</div>';
+      return;
+    }
 
-var currentProgressLift = LIFTS[0];
+    var html = '<table class="log-table"><thead><tr><th>Lift</th><th>Weight</th><th>Reps</th><th>Est. 1RM</th><th>Date</th><th></th></tr></thead><tbody>';
+    sets.forEach(function(s){
+      html += '<tr><td>' + s.lift + '</td><td>' + s.weight + ' kg</td><td>' + s.reps + '</td><td>' + Math.round(epley(s.weight,s.reps)) + ' kg</td><td>' + fmtDate(s.date) + '</td><td><button class="del-btn" data-del="' + s.id + '">Remove</button></td></tr>';
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+
+    wrap.querySelectorAll('.del-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-del');
+        var remaining = loadSets().filter(function(s){ return s.id !== id; });
+        saveSets(remaining);
+        renderLog();
+      });
+    });
+  }
+
+  function initLogForm(){
+    var logForm = document.getElementById('log-form');
+    if(!logForm) return;
+    var logDateInput = document.getElementById('log-date');
+    logDateInput.value = logDateInput.value || todayISO();
+
+    logForm.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      var lift = document.getElementById('log-lift').value;
+      var weight = parseFloat(document.getElementById('log-weight').value);
+      var reps = parseInt(document.getElementById('log-reps').value, 10);
+      var date = logDateInput.value || todayISO();
+      if(!weight || !reps || weight <= 0 || reps <= 0) return;
+
+      var sets = loadSets();
+      sets.push({id: uid(), lift: lift, weight: weight, reps: reps, date: date});
+      saveSets(sets);
+
+      document.getElementById('log-weight').value = '';
+      document.getElementById('log-reps').value = '';
+      renderLog();
+    });
+
+    renderLog();
+  }
+
+  /* ---------------- PROGRESS (app-progress.html) ---------------- */
+  var currentProgressLift = LIFTS[0];
+
   function buildLineChartSVG(points){
     var w = Math.max(560, points.length * 90);
     var h = 260;
@@ -156,12 +177,15 @@ var currentProgressLift = LIFTS[0];
     var maxVal = Math.max.apply(null, points.map(function(p){ return p.val; }));
     if(minVal === maxVal){ minVal -= 5; maxVal += 5; }
     var range = maxVal - minVal;
+
     var xStep = (w - padL - padR) / (points.length - 1);
     function xAt(i){ return padL + i * xStep; }
     function yAt(v){ return padT + (1 - (v - minVal)/range) * (h - padT - padB); }
+
     var pathD = points.map(function(p,i){
       return (i === 0 ? 'M' : 'L') + xAt(i).toFixed(1) + ',' + yAt(p.val).toFixed(1);
     }).join(' ');
+
     var gridLines = '';
     var steps = 4;
     for(var i=0;i<=steps;i++){
@@ -170,11 +194,14 @@ var currentProgressLift = LIFTS[0];
       gridLines += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (w-padR) + '" y2="' + y.toFixed(1) + '" stroke="var(--hair)" stroke-width="1"/>';
       gridLines += '<text x="4" y="' + (y+4).toFixed(1) + '" class="chart-point-label">' + Math.round(v) + '</text>';
     }
+
     var dots = points.map(function(p,i){
       return '<circle cx="' + xAt(i).toFixed(1) + '" cy="' + yAt(p.val).toFixed(1) + '" r="4" fill="var(--ink)"/>' +
-        '<text x="' + xAt(i).toFixed(1) + '" y="' + (h-10) + '" text-anchor="middle" class="chart-point-label">' + fmtDate(p.date) + '</text>';
+             '<text x="' + xAt(i).toFixed(1) + '" y="' + (h-10) + '" text-anchor="middle" class="chart-point-label">' + fmtDate(p.date) + '</text>';
     }).join('');
+
     var lastLabel = '<text x="' + xAt(points.length-1).toFixed(1) + '" y="' + (yAt(points[points.length-1].val)-12).toFixed(1) + '" text-anchor="middle" font-family="Bebas Neue" font-size="16" fill="var(--ink)">' + Math.round(points[points.length-1].val) + ' kg</text>';
+
     return '<svg class="chart" viewBox="0 0 ' + w + ' ' + h + '" width="' + w + '" height="' + h + '">' +
       gridLines +
       '<path d="' + pathD + '" fill="none" stroke="var(--volt)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>' +
@@ -198,18 +225,23 @@ var currentProgressLift = LIFTS[0];
       });
       chipsEl.appendChild(chip);
     });
+
     var sets = loadSets()
-    .filter(function(s){ return s.lift === currentProgressLift; })
-    .sort(function(a,b){ return a.date.localeCompare(b.date); });
+      .filter(function(s){ return s.lift === currentProgressLift; })
+      .sort(function(a,b){ return a.date.localeCompare(b.date); });
+
     var chartWrap = document.getElementById('progress-chart-wrap');
+
     if(sets.length < 2){
       chartWrap.innerHTML = '<div class="empty-state"><strong>Not enough data yet</strong>Log at least two ' + currentProgressLift.toLowerCase() + ' sets on different dates to see a trend line.</div>';
       return;
     }
+
     var points = sets.map(function(s){ return {date: s.date, val: epley(s.weight, s.reps)}; });
     chartWrap.innerHTML = buildLineChartSVG(points);
   }
 
+  /* ---------------- PROGRAMS (app-programs.html) ---------------- */
   function renderPrograms(){
     var listEl = document.getElementById('program-list');
     if(!listEl) return;
@@ -221,18 +253,21 @@ var currentProgressLift = LIFTS[0];
         '<button class="program-set-btn' + (isActive ? ' is-active' : '') + '" data-program="' + p.id + '">' + (isActive ? 'Active' : 'Set as active') + '</button></div>';
     });
     listEl.innerHTML = html;
+
     listEl.querySelectorAll('.program-set-btn').forEach(function(btn){
       btn.addEventListener('click', function(){
         saveProgram(btn.getAttribute('data-program'));
         renderPrograms();
-        initDashboard();
+        initDashboard(); // no-op unless dashboard elements exist on this page
       });
     });
   }
 
+  /* ---------------- CALCULATOR (app-calculator.html) ---------------- */
   function initCalculator(){
     var weightInput = document.getElementById('calc-weight');
     if(!weightInput) return;
+
     var unit = 'kg';
     var kgBtn = document.getElementById('unit-kg');
     var lbBtn = document.getElementById('unit-lb');
@@ -245,6 +280,7 @@ var currentProgressLift = LIFTS[0];
     var saveBtn = document.getElementById('calc-save-btn');
     var saveConfirm = document.getElementById('calc-save-confirm');
     var pcts = [0.95, 0.85, 0.75, 0.65];
+
     function setUnit(u){
       unit = u;
       kgBtn.classList.toggle('active', u === 'kg');
@@ -253,50 +289,60 @@ var currentProgressLift = LIFTS[0];
     }
     kgBtn.addEventListener('click', function(){ setUnit('kg'); });
     lbBtn.addEventListener('click', function(){ setUnit('lb'); });
+
     function calcCalculate(){
       var w = parseFloat(weightInput.value);
       var r = parseInt(repsInput.value, 10);
       var lift = liftSelect.value;
-      liftLabel.textContent = lift.toUpperCase() + ' - ESTIMATED 1RM';
+      liftLabel.textContent = lift.toUpperCase() + ' — ESTIMATED 1RM';
       saveConfirm.textContent = '';
+
       if(!w || !r || w <= 0 || r <= 0){
-        onermOut.textContent = '- ' + unit;
+        onermOut.textContent = '— ' + unit;
         onermNote.textContent = 'Enter a weight and rep count to calculate.';
-        pctRows.forEach(function(row){ row.querySelector('.wt').textContent = '-'; });
+        pctRows.forEach(function(row){ row.querySelector('.wt').textContent = '—'; });
         saveBtn.disabled = true;
         return;
       }
+
       if(r > 12){
         onermNote.textContent = 'Estimates get unreliable above ~12 reps. Try a heavier, lower-rep set for a tighter number.';
       } else {
         onermNote.textContent = 'Based on ' + w + ' ' + unit + ' for ' + r + ' rep' + (r>1?'s':'') + '.';
       }
+
       var onerm = epley(w, r);
       onermOut.textContent = Math.round(onerm) + ' ' + unit;
+
       pctRows.forEach(function(row, i){
         var val = Math.round(onerm * pcts[i] / 2.5) * 2.5;
         row.querySelector('.wt').textContent = val + ' ' + unit;
       });
+
       saveBtn.disabled = (unit !== 'kg');
       if(unit !== 'kg'){
         saveConfirm.textContent = 'Switch to kilograms to save this set into your log.';
       }
     }
+
     saveBtn.addEventListener('click', function(){
       var w = parseFloat(weightInput.value);
       var r = parseInt(repsInput.value, 10);
       var lift = liftSelect.value;
       if(!w || !r || unit !== 'kg') return;
+
       var sets = loadSets();
       sets.push({id: uid(), lift: lift, weight: w, reps: r, date: todayISO()});
       saveSets(sets);
       saveConfirm.textContent = 'Saved to your log for today.';
     });
+
     weightInput.addEventListener('input', calcCalculate);
     repsInput.addEventListener('input', calcCalculate);
     liftSelect.addEventListener('change', calcCalculate);
   }
 
+  /* ---------------- HERO COUNT-UP (index.html) ---------------- */
   function runCountUp(){
     var els = document.querySelectorAll('[data-countup]');
     if(!els.length) return;
@@ -325,6 +371,8 @@ var currentProgressLift = LIFTS[0];
     });
   }
 
+  /* ---------------- init: every function guards on its own elements,
+     so the same script tag works unmodified on every page ---------------- */
   document.addEventListener('DOMContentLoaded', function(){
     initDashboard();
     initLogForm();
@@ -334,5 +382,3 @@ var currentProgressLift = LIFTS[0];
     runCountUp();
   });
 })();
-
-    
