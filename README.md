@@ -26,6 +26,10 @@ Vanilla HTML, CSS, and JavaScript (`app.js`, `styles.css`), structured as a mult
 - [BRD](FitNexx_BRD.md)
 - [MRD](FitNexx_MRD.md)
 
+## How it was built
+
+Built by Pryank Wadhera. Product scope, requirements, and QA are mine.
+
 ## Status
 
 Live — v1 built and deployed as a self-directed product project.
