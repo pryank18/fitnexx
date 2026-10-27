@@ -80,6 +80,7 @@
   .hero-panel{border:1px solid var(--hair);padding:28px;display:flex;flex-direction:column;gap:22px;}
   .hero-stat-row{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--hair);padding-bottom:18px;}
   .hero-stat-row:last-child{border-bottom:none;padding-bottom:0;}
+  .hero-stat-note{font-size:12px;letter-spacing:.02em;opacity:.75;margin:0;}
   .hero-stat-num{font-family:'Bebas Neue',sans-serif;font-size:40px;font-variant-numeric:tabular-nums;}
   .hero-stat-label{font-size:13px;color:var(--muted);max-width:150px;text-align:right;}
 
